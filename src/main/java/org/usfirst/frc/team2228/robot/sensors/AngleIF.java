@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class AngleIF {
 	
 	// Define class instances
-	private _navx;
-	private roboAccel;
+	private navx _navx;
+	private RoboRioAccelerometers roboAccel;
 	
 	// Constructor
 	public AngleIF() {
