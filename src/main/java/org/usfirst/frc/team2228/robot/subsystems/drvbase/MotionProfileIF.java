@@ -1,7 +1,7 @@
 package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 
 // Profiles are stored in directory robot\profiles
-import org.usfirst.frc.team2228.robot.profiles.DriveStraightLine;
+import org.usfirst.frc.team2228.robot.subsystems.drvbase.profile.DriveStraightLine;
 
 public class MotionProfileIF {
 	private SRXDriveBase driveBase;
@@ -21,10 +21,14 @@ public class MotionProfileIF {
 		if(!isSRXMotionProfileActive){
 			// Create and instance of the DriveStraightLine class 
 			DriveStraightLine profileDataRight = new DriveStraightLine();
+			// This profile example uses the same profile file
+			// xxxx profileDataLeft = new xxxx();
+
 			isSRXMotionProfileActive = true;
 		} else {
 			//public boolean SRXProfileMove(double[][] ProfileRight, double[][] ProfileLelft, int totalPointNum)
-			if(!drivebase.SRXProfileMove(profileDataRight.PointsR, 
+			if(!driveBase.SRXProfileMove(profileDataRight.PointsR, 
+										// this example uses the same profile file for the left mtr
 										profileDataRight.PointsR, 
 										profileDataRight.kNumPoints)){
 				isSRXMotionProfileActive = false;

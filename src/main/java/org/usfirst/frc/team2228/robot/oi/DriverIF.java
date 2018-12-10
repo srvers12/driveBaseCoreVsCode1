@@ -22,7 +22,7 @@ public class DriverIF {
 	public double getWheelAxis() {
 		return xboxIF.RIGHT_JOYSTICK_Y();
 	}
-	public boolean getMecanumShiftSidewaysBtn() {
+	public double getMecanumShiftSidewaysBtn() {
 		return xboxIF.LEFT_TRIGGER();
 	}
 	

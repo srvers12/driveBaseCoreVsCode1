@@ -193,7 +193,7 @@ public class SRXDriveBase {
 	private double SRXRLeftTrajectoryPosition=0;
 	private double SRXLeftTrajectoryVelocity=0; 
 	private double SRXLeftTrajectoryHeading=0;
-	private double estProfileTimeMs = 0;
+	private double estProfileFaultTimeMs = 0;
 	private double API2SRXThreadTimeSec = 0;
 	private double kBaseTrajPeriodMs = 0;
 
@@ -202,64 +202,45 @@ public class SRXDriveBase {
 	// ====================================	
 	// Variables
 	private int SRXTimeoutValueMs = 10;
-	private int correctionSensorType = 1;
-	//private int stepFunctionStopCount = 0;
-	//private int autoCmdSequence = 1;
-	
-	//private int loggingDataIncrement = 1;
-	
+	private int correctionSensorType = 1;	
 	private int RightCruiseVelNativeUnits = 0;
+	private int LeftMoveTimeSec = 0;
 	private int RightAccelNativeUnits = 0;
 	private int LeftCruiseVelNativeUnits = 0;
 	private int LeftAccelNativeUnits = 0;
 	private int LeftRotateTimeSec = 0;
+
 	private double RightDistanceCnts = 0;
 	private double LeftDistanceCnts = 0;
-	
 	private double SRXMotionLeftPos =0;
 	private double SRXMotioRightPos =0;
 	private double SRXMotionLeftVel = 0;
 	private double SRXMotioRightVel = 0;
-	
-	//private double leftEncoderStopCount = 0;
 	private double leftCmdLevel = 0;
 	private double rightCmdLevel = 0;
 	private double rotationEncoderStopCount = 0;
 	private double driveStraightDirCorrection = 0;
-	//private double wheelToCenterDistanceIn = 0;
-	//private double outerDistanceStopCnt = 0;
 	private double headingDeg =0;
-	//private double calCorrectionFactor = 0;
-	//private double delayStartTime = 0;
 	private double methodStartTime = 0;
 	private double methodTime = 0;
-	//private double rightSensorStartPositionRead = 0;
 	private double rightSensorPositionRead = 0;
-	private double leftSensorPositionRead = 0;
 	private double leftSensorPositionRead = 0;
 	private double Kp_encoderHeadingPID = 0.001;
 	private double Ki_encoderHeadingPID = 0;
 	private double Kd_encoderHeadingPID = 0;
-	
 	private double encoderPIDCorrection = 0;
 	private double encoderHeadingDeg = 0;
 	private double sensorCorrection = 1;
-	//private double stepFunctionSpeed = 0;
 	private double rightEncoderPosition = 0;
-	//private double rightSensorPositionRaw = 0;
 	private double leftEncoderPosition = 0;
-	//private double leftSensorPositionRaw = 0;
 	private double kStdAccelTimeSegment = 3;
 	private double stepFunctionSpeed = 0;
 	
-	//private double MinimumRadiusDistanceAddition = 4;
-	//private double RobotDirectionSign = 0;
 		
 	//  Program flow switches
 	private boolean isConsoleDataEnabled = true;
 	private boolean isLoggingDataEnabled = false;
 	private boolean islogSRXDriveDataActive = false;
-	
 	private boolean isTrapezoidalTurnToAngleActive = false;
 	private boolean isSRXMoveActive = false;
 	private boolean isStdTrapezoidalRotateActive = false;
@@ -268,10 +249,10 @@ public class SRXDriveBase {
 	private boolean isMecanumShiftEnabled = false;
 	private boolean isTestEnabled = false;
 	private boolean isStepTestEnabled = false;
-	
+	private boolean isMotorEncoderTestEnabled = false;
+
 	private String logSRXDriveString = " ";
 	private String lastMsgString = " ";
-	//private String logString = " ";
 	
 	// SRXDriveBase Class Constructor
 	public SRXDriveBase(RobotMap _robotMap, DebugLogger _logger) {
@@ -285,7 +266,6 @@ public class SRXDriveBase {
 		leftMasterMtr = new TalonSRX(RobotMap.LEFT_MSTR_MTR_CAN_ID);
 		leftFollowerMtr = new TalonSRX(RobotMap.LEFT_FOLLOWER_MTR_CAN_ID);
 
-		// create cashing object
 		rightFaults = new Faults();
 		leftFaults = new Faults();
 
@@ -428,7 +408,6 @@ public class SRXDriveBase {
 		leftMasterMtr.getSensorCollection().setQuadraturePosition(0, 25);
 	}
 
-	
 	public void setCorrectionSensor(int _CorrectionSensorSelect){
 		//0-none, 1-encoder, 2-Distance, 3-IMU
 		correctionSensorType = _CorrectionSensorSelect;
@@ -459,8 +438,9 @@ public class SRXDriveBase {
 	public void setEnableConsoleData(boolean _consoleData){
 		isConsoleDataEnabled = _consoleData;
 	}
+
 	public void setTestEnable(int _testNumber){
-		switch(_testnumber){
+		switch(_testNumber){
 			case 0:
 				isMotorEncoderTestEnabled = false;
 				isStepTestEnabled = false;
@@ -817,7 +797,7 @@ public class SRXDriveBase {
 			msg("START MOTION CALCULATIONS ==================================");
 			methodStartTime = Timer.getFPGATimestamp();
 			isStdTrapezoidalMoveActive = true;
-			LeftDistanceCnts = (int)(_SRXLeftDistanceIn / SRXDriveBaseCfg.kInchesPerCount);
+			LeftDistanceCnts = (int)(_MoveDistanceIn / SRXDriveBaseCfg.kInchesPerCount);
 			LeftCruiseVelNativeUnits = (int)(_MovePwrlevel * SRXDriveBaseCfg.MaxVel_VelNativeUnits);
 			LeftMoveTimeSec = (int)(1.5 * (LeftDistanceCnts / LeftCruiseVelNativeUnits)); 
 			LeftAccelNativeUnits = (int)(LeftCruiseVelNativeUnits/(LeftMoveTimeSec/kStdAccelTimeSegment));
@@ -866,7 +846,7 @@ public class SRXDriveBase {
 			
 			// rotationEncoderStopCount = C(=>Pi*D) * (angle as a fraction of C)			                                
 			LeftDistanceCnts = (int)(Math.PI * (SRXDriveBaseCfg.kTrackWidthIn) * SRXDriveBaseCfg.kEncoderCountsPerIn * (_RotateAngleDeg / 360));
-			LeftCruseVelNativeUnits = (int)(_RotatePwrLevel * SRXDriveBaseCfg.MaxVel_VelNativeUnits);
+			LeftCruiseVelNativeUnits = (int)(_RotatePwrLevel * SRXDriveBaseCfg.MaxVel_VelNativeUnits);
 			LeftRotateTimeSec = (int)(1.5 * (LeftDistanceCnts / LeftCruiseVelNativeUnits)); 
 			LeftAccelNativeUnits = (int)(LeftCruiseVelNativeUnits/(LeftRotateTimeSec/kStdAccelTimeSegment));
 		
@@ -889,7 +869,8 @@ public class SRXDriveBase {
 							   RightDistanceCnts, 
 							   LeftCruiseVelNativeUnits,	
 							   LeftAccelNativeUnits, 
-							   LeftDistanceCnts)){
+							   LeftDistanceCnts,
+							   (LeftRotateTimeSec + 1)){
 			isStdTrapezoidalRotateActive = false;
 			methodTime = Timer.getFPGATimestamp() - methodStartTime;
 			msg("SRXRotate (Sec) = " + methodTime);
@@ -932,7 +913,7 @@ public class SRXDriveBase {
 
 			
 		} else {
-			
+			// todo - review collision dectection
 			// Check for program errors or end of index
 			if (((Math.abs(SRXMotionLeftPos) >= Math.abs(_leftDistance)) 
 					&& (Math.abs(SRXMotioRightPos) >= Math.abs(_rightDistance)))
@@ -990,7 +971,7 @@ public class SRXDriveBase {
 
 			// todo - set sensor position to zero
 
-			// Clear the buffer just in case user decided to disable in the
+			// Clear the buffer just in case profile was disabled in process
 			rightMasterMtr.clearMotionProfileTrajectories();
 			leftMasterMtr.clearMotionProfileTrajectories();
 
@@ -998,7 +979,7 @@ public class SRXDriveBase {
 			TrajectoryPoint trajectoryPointRight = new TrajectoryPoint();
 			TrajectoryPoint trajectoryPointLeft = new TrajectoryPoint();
 
-			// set the base trajectory period to zero, use the profile trajectory period
+			// set the "base" trajectory period to zero, use the profile trajectory period in the profile file
 			rightMasterMtr.configMotionProfileTrajectoryPeriod(0, SRXTimeoutValueMs);
 			leftMasterMtr.configMotionProfileTrajectoryPeriod(0, SRXTimeoutValueMs);
 
@@ -1006,18 +987,18 @@ public class SRXDriveBase {
 			rightMasterMtr.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, SRXTimeoutValueMs);
 			leftMasterMtr.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, SRXTimeoutValueMs);
 
-			//When we do start running our state machine start at the beginning.
+			//When we do start running set state machine start at the beginning.
 			SRXProfileState = 0;
 
 			// Determine profile timeout time
 			methodStartTime = Timer.getFPGATimestamp();
-			estProfileTimeMs = (pointsRight[1][2] * profileNumPoints) + 500;
+			estProfileFaultTimeMs = ((pointsRight[1][2] * profileNumPoints) + 500) + methodStartTime;
 
 			// todo - next two lines ??
 			rightMasterMtr.changeMotionControlFramePeriod(5);
 			driveLefttMasterMtr.changeMotionControlFramePeriod(5);
 
-			// Create a periodic task tread to funnel our trajectory points into talon.
+			// Create a periodic task tread to funnel our Phoenix Framework API trajectory points into SRXtalon.
 			// Generally speaking you want to call it at least twice as fast as the duration
 			// of your trajectory points. 
 			class PeriodicRunnable implements java.lang.Runnable {
@@ -1042,7 +1023,7 @@ public class SRXDriveBase {
 			SRXLeftTrajectoryHeading = leftMasterMtr.getActiveTrajectoryHeading();
 
 			// Check for errors - program hangup, change of mode, profile underrun	
-			if ((Timer.getFPGATimestamp() > estProfileTimeMs) || 
+			if ((Timer.getFPGATimestamp() > estProfileFaultTimeMs) || 
 					(rightMasterMtr.getControlMode() != ControlMode.MotionProfile) ||
 					SRXProfileStatusRight.hasUnderrun) {
 
@@ -1133,7 +1114,7 @@ public class SRXDriveBase {
 	private void fillProfileAPIBuffer(int _profileIndexPtr, int _profileAccumCnt) {
 
 		// for each point, fill trajectory point structure and pass it to API to load Top buffer
-		// This will then be loaded into the SRX buffer via API "processMotionProfileBuffer()""
+		// This will then be loaded into the SRX buffer via Phoenix Framework API "processMotionProfileBuffer()""
 		for (int i = _profileIndexPtr; i < _profileAccumCnt; i++) {
 			trajectoryPointRight.position = pointsRight[i][0];
 			trajectoryPointLeft.position = pointsLeft[i][0];
@@ -1170,7 +1151,7 @@ public class SRXDriveBase {
 				trajectoryPointRight.isLastPoint = false;
 				trajectoryPointLeft.isLastPoint = false;
 			}
-			// Push points to profile API (TopBuffer)
+			// Push points to profile Phoenix Framework API (TopBuffer)
 			rightMasterMtr.pushMotionProfileTrajectory(trajectoryPointRight);
 			leftMasterMtr.pushMotionProfileTrajectory(trajectoryPointLeft);
 		}

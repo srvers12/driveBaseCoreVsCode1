@@ -2,6 +2,7 @@ package org.usfirst.frc.team2228.robot.oi;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 public class XboxIF {
 	private XboxController xbox;
@@ -103,5 +104,9 @@ public class XboxIF {
 			return false;
 		}
 	}
+	// intensity 0 to 1
+	public void SET_RUMBLE(double _intensity) {
+		 xbox.setRumble(RumbleType.kLeftRumble, _intensity);
+	};
 }
 
