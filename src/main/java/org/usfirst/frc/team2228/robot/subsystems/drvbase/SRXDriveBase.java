@@ -24,10 +24,9 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 // public void setLeftSensorPositionToZero()
 // public void setRightEncPositionToZero()
 // public void setLeftEncPositionToZero()
-// public void setCorrectionSensor(int _CorrectionSensorSelect)
-
+// public void driveStraightFwdCorrection(double _driveStraightCorrection){
 // public void setBrakeMode(boolean _isBrakeEnabled)
-// public void StopMotors()
+// public void stopMotors()
 // public void setDriveBaseRamp(double _SecToMaxPower)
 
 // private void clearSRXDriveBasePrgFlgs()
@@ -74,7 +73,8 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 
 // *****
 //	public void setThrottleTurn(double _throttleValue, 
-//								double _turnValue) 
+//								double _turnValue'
+//								double _headingCorrection) 
 // *****
 
 // =====================================
@@ -90,8 +90,9 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 //						  program converts to VelocityNativeUnits as (0 to 1)* maxVelocityNativeUnits
 
 // ++++++++++
-// public boolean move(double _MoveDistanceIn, 
-//					   double _MovePwrLevel,
+// public boolean move(double  _MoveDistanceIn, 
+//					   double  _MovePwrLevel,
+//					   boolean _MoveSideways)
 // +++++++++
 //
 // +++++++++
@@ -101,13 +102,12 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 //
 // +++++++++
 // public boolean SRXBasemove(int    _rightCruiseVel, 
-//					   int    _rightAccel, 
-//					   double _rightDistance, 
-//					   int    _leftCruiseVel,	
-//					   int    _leftAccel, 
-//					   double _leftDistance,
-//					   double _indexFaultTimeSec)
-// distanceIF.collisionDetected
+//					   		  int    _rightAccel, 
+//					   		  double _rightDistance, 
+//					   		  int    _leftCruiseVel,	
+//					   		  int    _leftAccel, 
+//					   		  double _leftDistance,
+//					   		  double _indexFaultTimeSec)
 // +++++++++
 //
 // ++++++++
@@ -122,8 +122,6 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 
 //Carrying over the classes from other libraries
 import org.usfirst.frc.team2228.robot.RobotMap;
-import org.usfirst.frc.team2228.robot.sensors.AngleIF;
-import org.usfirst.frc.team2228.robot.sensors.DistanceIF;
 import org.usfirst.frc.team2228.robot.util.DebugLogger;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -146,10 +144,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SRXDriveBase {
-	// The following is for the addition of a Navx and ultrasonic sensors
-	// public class SRXDriveBase(AngleIF _angle, DistanceIF _distance)
-	// AngleIF robotAngle = _angle;
-	// DistanceIF robotDistance = _distance;
 	
 	
 	// DifferentialDrive or tank motors
@@ -158,15 +152,13 @@ public class SRXDriveBase {
 	private TalonSRX leftMasterMtr;
 	private TalonSRX leftFollowerMtr;
 	private DebugLogger log;
-	private AngleIF angleIF;
-	private DistanceIF distanceIF;
 	private RobotMap RobotMap;
 	private Faults leftFaults;
 	private Faults rightFaults;
 	private Notifier pushAPI2SRXThread;
 	
 	// ===================================
-	// SRX MOTION PROFILE
+	// SRX MOTION PROFILE DRIVE BASE 
 
 	// The status of the motion profile executer and buffer inside the Talon.
 	// Instead of creating a new one every time we call getMotionProfileStatus,
@@ -179,10 +171,11 @@ public class SRXDriveBase {
 	// How many trajectory points do we wait for before firing the motion
 	// profile.
 	private int kBufferCntMin = 50;
+	private int kSRXBufferSize = 128;
+
 	private int SRXProfileState = 0;
 	private int bufferAccumCnt = 0;
 	private int profileNumPoints = 0;
-	private int kSRXBufferSize = 128;
 	private int profileIndexPointer = 0;
 	private int profileCountAccumulator = 0;
 
@@ -200,7 +193,8 @@ public class SRXDriveBase {
 	private boolean isSRXProfileMoveActive = false;
 
 	// ====================================	
-	// Variables
+	// DRIVE BASE VARIABLES
+
 	private int SRXTimeoutValueMs = 10;
 	private int correctionSensorType = 1;	
 	private int RightCruiseVelNativeUnits = 0;
@@ -210,6 +204,9 @@ public class SRXDriveBase {
 	private int LeftAccelNativeUnits = 0;
 	private int LeftRotateTimeSec = 0;
 
+	private double kDriveStraightFwdCorrection = SRXDriveBaseCfg.kDriveStraightFwdCorrection;
+	private double kStdAccelTimeSegment = 3;
+
 	private double RightDistanceCnts = 0;
 	private double LeftDistanceCnts = 0;
 	private double SRXMotionLeftPos =0;
@@ -218,24 +215,22 @@ public class SRXDriveBase {
 	private double SRXMotioRightVel = 0;
 	private double leftCmdLevel = 0;
 	private double rightCmdLevel = 0;
-	private double rotationEncoderStopCount = 0;
-	private double driveStraightDirCorrection = 0;
-	private double headingDeg =0;
+	//private double rotationEncoderStopCount = 0;
+	//private double driveStraightDirCorrection = 0;
+	//private double headingDeg =0;
 	private double methodStartTime = 0;
 	private double methodTime = 0;
 	private double rightSensorPositionRead = 0;
 	private double leftSensorPositionRead = 0;
-	private double Kp_encoderHeadingPID = 0.001;
-	private double Ki_encoderHeadingPID = 0;
-	private double Kd_encoderHeadingPID = 0;
-	private double encoderPIDCorrection = 0;
+	//private double Kp_encoderHeadingPID = 0.001;
+	//private double Ki_encoderHeadingPID = 0;
+	//private double Kd_encoderHeadingPID = 0;
+	//private double encoderPIDCorrection = 0;
 	private double encoderHeadingDeg = 0;
-	private double sensorCorrection = 1;
-	private double rightEncoderPosition = 0;
-	private double leftEncoderPosition = 0;
-	private double kStdAccelTimeSegment = 3;
+	//private double sensorCorrection = 1;
+	//private double rightEncoderPosition = 0;
+	//private double leftEncoderPosition = 0;
 	private double stepFunctionSpeed = 0;
-	
 		
 	//  Program flow switches
 	private boolean isConsoleDataEnabled = true;
@@ -251,7 +246,7 @@ public class SRXDriveBase {
 	private boolean isStepTestEnabled = false;
 	private boolean isMotorEncoderTestEnabled = false;
 
-	private String logSRXDriveString = " ";
+	//private String logSRXDriveString = " ";
 	private String lastMsgString = " ";
 	
 	// SRXDriveBase Class Constructor
@@ -408,9 +403,8 @@ public class SRXDriveBase {
 		leftMasterMtr.getSensorCollection().setQuadraturePosition(0, 25);
 	}
 
-	public void setCorrectionSensor(int _CorrectionSensorSelect){
-		//0-none, 1-encoder, 2-Distance, 3-IMU
-		correctionSensorType = _CorrectionSensorSelect;
+	public void driveStraightFwdCorrection(double _driveStraightCorrection){
+		kDriveStraightFwdCorrection = _driveStraightCorrection;
 	}
 	
 	public void setBrakeMode(boolean _isBrakeEnabled) {
@@ -430,7 +424,7 @@ public class SRXDriveBase {
 		}
 	}
 
-	public void StopMotors() {
+	public void stopMotors() {
 		rightMasterMtr.setNeutralOutput();
 		leftMasterMtr.setNeutralOutput();
 	}
@@ -464,10 +458,10 @@ public class SRXDriveBase {
 		clearSRXDrvBasePrgFlgs();
 		
 		// Load smart dashboard and shuffle board parameters
-		loadSmartDashBoardParmeters();
+		smartDashboardDriveBaseData();
 		
 		// Stop motors and clear position counters
-		StopMotors();
+		stopMotors();
 		setDriveBaseRamp(0);
 		setRightSensorPositionToZero();
 		setLeftSensorPositionToZero();
@@ -758,11 +752,12 @@ public class SRXDriveBase {
 	// SET THROTTLE-TURN
 	// ======================================
 	
-	public void setThrottleTurn(double _throttleValue, double _turnValue) {
+	public void setThrottleTurn(double _throttleValue, double _turnValue, double _headingCorrection) {
 
 			// Calculate cmd level in terms of PercentVbus; range (-1 to 1)
-			leftCmdLevel = _throttleValue + (_turnValue/2);
-			rightCmdLevel = ((_throttleValue* SRXDriveBaseCfg.kDriveStraightFwdCorrection) - (_turnValue/2));
+			leftCmdLevel = _throttleValue + (_turnValue/2) + (_headingCorrection/2);
+			rightCmdLevel = ((_throttleValue * kDriveStraightFwdCorrection) - 
+									(_turnValue/2)) - (_headingCorrection/2);
 		
 		// Output commands to SRX modules set as [% from (-1 to 1)]
 		SetDriveTrainCmdLevel(rightCmdLevel, leftCmdLevel);
@@ -844,7 +839,7 @@ public class SRXDriveBase {
 			isStdTrapezoidalRotateActive = true;
 			methodStartTime = Timer.getFPGATimestamp();
 			
-			// rotationEncoderStopCount = C(=>Pi*D) * (angle as a fraction of C)			                                
+			// rotationEncoderStopCount = C(=>PI*D) * (angle as a fraction of C)			                                
 			LeftDistanceCnts = (int)(Math.PI * (SRXDriveBaseCfg.kTrackWidthIn) * SRXDriveBaseCfg.kEncoderCountsPerIn * (_RotateAngleDeg / 360));
 			LeftCruiseVelNativeUnits = (int)(_RotatePwrLevel * SRXDriveBaseCfg.MaxVel_VelNativeUnits);
 			LeftRotateTimeSec = (int)(1.5 * (LeftDistanceCnts / LeftCruiseVelNativeUnits)); 

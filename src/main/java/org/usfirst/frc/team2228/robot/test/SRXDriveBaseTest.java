@@ -37,7 +37,13 @@ public class SRXDriveBaseTest {
 	private double CAL_turn = 0;
 	private double methodStartTime = 0;
 	private double delayStartTime = 0;
-    
+	private double leftSensorPositionRead = 0;
+	private double rightSensorPositionRead = 0;
+	private double leftEncoderStopCount = 0;
+	private double calCorrectionFactor = 0;
+	private double headingDeg = 0;
+	private double methodTime = 0;
+	
 	private boolean isMtrTestBtnActive = false;
 	private boolean isStepFncTestBtnActive = false;
 	private boolean isTestStepFunctionActive = false;
@@ -72,7 +78,7 @@ public class SRXDriveBaseTest {
 		SmartDashboard.putBoolean("drvB-TstBtn-RotateToAngle:", false);
 		SmartDashboard.putBoolean("drvB-TstBtn-ProfileMove:", false);
 
-		SmartDashboard.putBoolean("drvB-TstBtn-EnableSRXDriveBaseConsoleDisplay:", isConsoleDataEnabled)
+		SmartDashboard.putBoolean("drvB-TstBtn-EnableSRXDriveBaseConsoleDisplay:", isConsoleDataEnabled);
 		
 		SmartDashboard.putNumber("drvB-kDriveStraightFwdCorrection:", drvBtst-kDriveStraightFwdCorrection);
 		SmartDashboard.putNumber("drvB-kDriveStraightRevCorrection:", drvBtst-kDriveStraightRevCorrection);
@@ -95,7 +101,7 @@ public class SRXDriveBaseTest {
 					testSelectionState = 1;
 				}
 				break;
-			case 1;
+			case 1:
 				if(SmartDashboard.getBoolean("drvB-TstBtn-StepFnc:", true)){
 					// public void testStepFunction(double _stepFunctionPower, double _stepFnctHighTimeSec, boolean _isTestForRightDrive)
 					stepFunctionTest(.3,3,true);
@@ -164,7 +170,7 @@ public class SRXDriveBaseTest {
 			if(!SmartDashboard.getBoolean("drvB-TstBtn-MotorEncoderTest:", false)) {
 				msg("END MOTOR ENCODER TEST=============");
 				isMtrTestBtnActive = false;
-				driveBase.StopMotors();
+				driveBase.stopMotors();
 				driveBase.setTestEnable(0);
 			}
 		}
@@ -219,7 +225,7 @@ public class SRXDriveBaseTest {
 			Tst_RightDriveCmdLevel = _pwrLevel;
 			Tst_LeftDriveCmdLevel = _pwrLevel;
 
-			Tst_RightDriveCmdLevel = (_pwrLevel * CAL_kDriveStraightFwdCorrection); 
+			Tst_RightDriveCmdLevel = (_pwrLevel * Tst_kDriveStraightFwdCorrection); 
 			leftEncoderStopCount = (_testDistanceIn / driveBase.getEncoderInchesPerCount());
 
 			driveBase.setRightSensorPositionToZero();
@@ -228,18 +234,18 @@ public class SRXDriveBaseTest {
 		
 			System.out.printf("StopCnt:%-8.0f+++LftEnc:%-8.0f +++RgtEnc:%-8.0f+++LftCmd:%-8.4f+++RgtCmd:%-8.4f%n", 
 								leftEncoderStopCount, 
-								leftSensorStartPositionRead, 
-								rightSensorStartPositionRead,
+								leftSensorPositionRead, 
+								rightSensorPositionRead,
 								Tst_LeftDriveCmdLevel,
 								Tst_RightDriveCmdLevel);
 		
-		if(leftSensorPositionRead <= leftEncoderStopCount)	{
+		} else if(leftSensorPositionRead <= leftEncoderStopCount)	{
 			msg("CALIBRATION AT STOP ===========================================");
 			
-			setDriveTrainRamp(0);
+			driveBase.setDriveTrainRamp(0);
 			// Apply power level in opposite direction for 1 second to brake
-			rightCmdLevel = -SRXDriveBaseCfg.kAutoRightMoveStopBrakeValue;
-			leftCmdLevel = -SRXDriveBaseCfg.kAutoRightMoveStopBrakeValue;
+			rightCmdLevel = -kAutoRightMoveStopBrakeValue;
+			leftCmdLevel = -kAutoRightMoveStopBrakeValue;
 			if (!delay(1)) {
 				msg("CALIBRATION END ==================================");
 				isTestMoveStraightCalActive = false;

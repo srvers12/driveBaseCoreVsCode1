@@ -186,10 +186,12 @@ public class DriveBaseTeleopMaster {
 		if(!isTestJoyStickEnabled){
 			if(driverIF.getMecanumShiftSidewaysBtn()){
 				driveBase.setMecanumShiftSidewaysEnable(true);
-				driveBase.setThrottleTurn(turnAxis, 0);
+				// public void setThrottleTurn(double _throttleValue, double _turnValue, double _headingCorrection) {	
+				driveBase.setThrottleTurn(turnAxis, 0, 0);
 			} else {
 				driveBase.setMecanumShiftSidewaysEnable(false);
-				driveBase.setThrottleTurn(throttleAxis, turnAxis);
+				// public void setThrottleTurn(double _throttleValue, double _turnValue, double _headingCorrection) {
+				driveBase.setThrottleTurn(throttleAxis, turnAxis, 0);
 			}
 		}
 		
