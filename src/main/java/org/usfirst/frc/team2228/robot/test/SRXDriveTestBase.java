@@ -9,18 +9,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 
 // REVISITONS
+// 
 // 181204 - reorganized test selection process
 
 // =========================
 // SET METHODS
-// public void init()
+// public void init(boolean _isConsoleEnabled)
 
 // =========================
 // METHODS
 //public void testMethodSelection()
 
 
-public class SRXDriveBaseTest {
+public class SRXDriveTestBase {
 
 	// objects
 	private DebugLogger log;
@@ -49,19 +50,20 @@ public class SRXDriveBaseTest {
 	private boolean isTestStepFunctionActive = false;
 	private boolean isTestMoveStraightCalActive = false;
 	private boolean isTestMethodSelectionActive = false;
-	private boolean isConsoleDataEnabled = true;
+	private boolean isConsoleEnabled = false;
 	private boolean isDelayActive = false;
 
 	private String lastMsgString = " ";
 
     // =====================
     // Constructor
-    public SRXDriveBaseTest(SRXDriveBase _driveBase, DebugLogger _logger){
+    public SRXDriveTestBase(SRXDriveBase _driveBase, DebugLogger _logger){
 		driveBase = _driveBase;
 		log = _logger;
     }
 
-    public void init(){
+    public void init(boolean _isConsoleEnabled){
+		isConsoleEnabled = _isConsoleEnabled? true : false;
 
 		isMtrTestBtnActive = false;
 		isTestStepFunctionActive = false;
@@ -78,7 +80,7 @@ public class SRXDriveBaseTest {
 		SmartDashboard.putBoolean("drvB-TstBtn-RotateToAngle:", false);
 		SmartDashboard.putBoolean("drvB-TstBtn-ProfileMove:", false);
 
-		SmartDashboard.putBoolean("drvB-TstBtn-EnableSRXDriveBaseConsoleDisplay:", isConsoleDataEnabled);
+		SmartDashboard.putBoolean("drvB-TstBtn-EnableSRXDriveBaseConsoleDisplay:", isConsoleEnabled);
 		
 		SmartDashboard.putNumber("drvB-kDriveStraightFwdCorrection:", drvBtst-kDriveStraightFwdCorrection);
 		SmartDashboard.putNumber("drvB-kDriveStraightRevCorrection:", drvBtst-kDriveStraightRevCorrection);
@@ -277,7 +279,7 @@ public class SRXDriveBaseTest {
 
 
 	private void msg(String _msgString){
-		if (isConsoleDataEnabled){
+		if (isConsoleEnabled){
 			if (_msgString != lastMsgString){
 				System.out.println(_msgString);
 				lastMsgString = _msgString;

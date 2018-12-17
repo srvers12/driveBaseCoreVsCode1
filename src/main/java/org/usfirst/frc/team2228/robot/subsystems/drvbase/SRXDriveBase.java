@@ -15,9 +15,8 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 // ===================================
 // SET COMMANDS
 // ===================================
-// public void init()
+// public void init(boolean _isConsoleEnabled, boolean _isLoggingEnabled)
 
-// public void setEnableConsoleData(boolean _consoleData)
 // public void setMecanumShiftEnable(boolean _mecanumShiftState)
 
 // public void setRightSensorPositionToZero()
@@ -215,26 +214,16 @@ public class SRXDriveBase {
 	private double SRXMotioRightVel = 0;
 	private double leftCmdLevel = 0;
 	private double rightCmdLevel = 0;
-	//private double rotationEncoderStopCount = 0;
-	//private double driveStraightDirCorrection = 0;
-	//private double headingDeg =0;
 	private double methodStartTime = 0;
 	private double methodTime = 0;
 	private double rightSensorPositionRead = 0;
 	private double leftSensorPositionRead = 0;
-	//private double Kp_encoderHeadingPID = 0.001;
-	//private double Ki_encoderHeadingPID = 0;
-	//private double Kd_encoderHeadingPID = 0;
-	//private double encoderPIDCorrection = 0;
 	private double encoderHeadingDeg = 0;
-	//private double sensorCorrection = 1;
-	//private double rightEncoderPosition = 0;
-	//private double leftEncoderPosition = 0;
 	private double stepFunctionSpeed = 0;
 		
 	//  Program flow switches
-	private boolean isConsoleDataEnabled = true;
-	private boolean isLoggingDataEnabled = false;
+	private boolean isConsoleEnabled = false;
+	private boolean isLoggingEnabled = false;
 	private boolean islogSRXDriveDataActive = false;
 	private boolean isTrapezoidalTurnToAngleActive = false;
 	private boolean isSRXMoveActive = false;
@@ -428,10 +417,6 @@ public class SRXDriveBase {
 		rightMasterMtr.setNeutralOutput();
 		leftMasterMtr.setNeutralOutput();
 	}
-	
-	public void setEnableConsoleData(boolean _consoleData){
-		isConsoleDataEnabled = _consoleData;
-	}
 
 	public void setTestEnable(int _testNumber){
 		switch(_testNumber){
@@ -453,7 +438,12 @@ public class SRXDriveBase {
 	public void setMecanumShiftSidewaysEnable(boolean _mecanumShiftState){
 		isMecanumShiftEnabled = _mecanumShiftState;
 	}
-	public void init() {
+	public void init(boolean _isConsoleEnabled, boolean _isLoggingEnabled) {
+
+		// Set class program switches
+		isConsoleEnabled = _isConsoleEnabled? true : false;
+		isLoggingEnabled = _isLoggingEnabled? true : false;
+
 		// Clear SRXDriveBase program control flags
 		clearSRXDrvBasePrgFlgs();
 		
@@ -492,8 +482,6 @@ public class SRXDriveBase {
 			leftMasterMtr.config_IntegralZone(SRXDriveBaseCfg.kPIDLoopIDx, SRXDriveBaseCfg.kdriveleftMstrIzone, SRXTimeoutValueMs);
 		}
 		
-		// See if console data display is enabled
-		isConsoleDataEnabled = SmartDashboard.getBoolean("TstBtn-EnableSRXDriveBaseConsoleDisplay:", isConsoleDataEnabled);
 	}
 	
 	// Clear all program control flags
@@ -638,13 +626,13 @@ public class SRXDriveBase {
 	}
 
 	public void logSRXDriveData(){
-		if (isLoggingDataEnabled){
+		if (isLoggingEnabled){
 			if(!islogSRXDriveDataActive){
 
-			// log data header
+			// log data header once
 			islogSRXDriveDataActive = true;
-			msg("Right Bus Voltage,Right Output Voltage,Right Master Current,Right Encoder Count,Right Follower Current,
-				 Left Bus Voltage,Left Output Voltage,Left Master Current,Left Encoder Count,Left Follower Current");
+			msg("Right Bus Voltage,Right Output Voltage,Right Master Current,Right Encoder Count,Right Follower Current," +
+				 "Left Bus Voltage,Left Output Voltage,Left Master Current,Left Encoder Count,Left Follower Current");
 			} else {
 				msg(String.format(",%8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f", 
 									rightMasterMtr.getBusVoltage(), 
@@ -662,12 +650,11 @@ public class SRXDriveBase {
 	} 
 	
 	private void msg(String _msgString){
-		if (_msgString != lastMsgString){
-			if(isConsoleDataEnabled || isLoggingDataEnabled){
+		if(isLoggingEnabled){
+			log.write(_msgString);
+		} else if (_msgString != lastMsgString){
+			if(isConsoleEnabled){
 				System.out.println(_msgString);
-			}
-			if(isLoggingDataEnabled){
-				log.write(_msgString);
 			}	
 			lastMsgString = _msgString;}
 		}
@@ -732,11 +719,12 @@ public class SRXDriveBase {
 			If (rightFaults.SensorOutOfPhase || leftFaults.SensorOutOfPhase) {
 
 				//Fault detected - change control mode to open loop percent output and stop motor
+				stopMotors();
 				rightMasterMtr.set(ControlMode.PercentOutput,0);
 				leftMasterMtr.set(ControlMode.PercentOutput,0);
 			} else {
 
-				// Output commands to SRX modules set as [% from (-1 to 1)] x MaxVel_VelNativeUnits
+				// Output commands to SRX modules set as [% from (-1 to 1)] * MaxVel_VelNativeUnits
 				rightMasterMtr.set(ControlMode.Velocity, (rightCmdLevel * SRXDriveBaseCfg.MaxVel_VelNativeUnits ));
 				leftMasterMtr.set(ControlMode.Velocity, (leftCmdLevel * SRXDriveBaseCfg.MaxVel_VelNativeUnits ));
 			}	
@@ -764,7 +752,7 @@ public class SRXDriveBase {
 		
 		//++++++++++++++++++++++++++++++++++++++
 		// Display data
-		if (isConsoleDataEnabled || isLoggingDataEnabled){
+		if (isConsoleEnabled || isLoggingEnabled){
 			msg(String.format("LftCmd:,%-4.3f,=RgtCmd:,%-4.3f,=LftVel:,%-5.2f,=RgtVel:,%-5.2f,=LftCur:,%-5.2f,=RgtCur:,%-5.2f %n", 
 									leftCmdLevel, 
 									rightCmdLevel,
@@ -790,7 +778,6 @@ public class SRXDriveBase {
 
 		if(!isStdTrapezoidalMoveActive){
 			msg("START MOTION CALCULATIONS ==================================");
-			methodStartTime = Timer.getFPGATimestamp();
 			isStdTrapezoidalMoveActive = true;
 			LeftDistanceCnts = (int)(_MoveDistanceIn / SRXDriveBaseCfg.kInchesPerCount);
 			LeftCruiseVelNativeUnits = (int)(_MovePwrlevel * SRXDriveBaseCfg.MaxVel_VelNativeUnits);
@@ -802,7 +789,7 @@ public class SRXDriveBase {
 			RightAccelNativeUnits = LeftAccelNativeUnits;
 			encoderHeadingDeg = (leftSensorPositionRead - rightSensorPositionRead) / SRXDriveBaseCfg.kTrackWidthIn;
 			
-			if (isConsoleDataEnabled || isLoggingDataEnabled){
+			if (isConsoleEnabled || isLoggingEnabled){
 				msg(String.format("RgtD:,%-8.2f, RgtV:,%-8d, RgtA:,%-8d, LftD:,%-8.2f, LftV:,%-8d, LftA:,%-8d %n", 
 						RightDistanceCnts, 
 						RightCruiseVelNativeUnits,
@@ -821,8 +808,6 @@ public class SRXDriveBase {
 							   (LeftMoveTimeSec + 1))){
 
 			isStdTrapezoidalMoveActive = false;
-			methodTime = Timer.getFPGATimestamp() - methodStartTime;
-			msg("Std Trap Move (Sec) = " + methodTime);
 			msg("END MOVE================");
 		}
 			
@@ -837,7 +822,6 @@ public class SRXDriveBase {
 		if(!isStdTrapezoidalRotateActive) {
 			msg("START ROTATE CALCULATIONS ==================================");
 			isStdTrapezoidalRotateActive = true;
-			methodStartTime = Timer.getFPGATimestamp();
 			
 			// rotationEncoderStopCount = C(=>PI*D) * (angle as a fraction of C)			                                
 			LeftDistanceCnts = (int)(Math.PI * (SRXDriveBaseCfg.kTrackWidthIn) * SRXDriveBaseCfg.kEncoderCountsPerIn * (_RotateAngleDeg / 360));
@@ -849,7 +833,7 @@ public class SRXDriveBase {
 			RightCruiseVelNativeUnits = -LeftCruiseVelNativeUnits;
 			RightAccelNativeUnits = -LeftAccelNativeUnits;
 			
-			if (isConsoleDataEnabled || isLoggingDataEnabled){
+			if (isConsoleEnabled || isLoggingEnabled){
 				msg(String.format("RgtD:,%-8.2f, ++RgtV:,%-8d, ++RgtA:,%-8d, ++LftD:,%-8.2f, ++LftV:,%-8d, ++LftA:,%-8d %n", 
 						RightDistanceCnts, 
 						RightCruiseVelNativeUnits,
@@ -867,8 +851,6 @@ public class SRXDriveBase {
 							   LeftDistanceCnts,
 							   (LeftRotateTimeSec + 1)){
 			isStdTrapezoidalRotateActive = false;
-			methodTime = Timer.getFPGATimestamp() - methodStartTime;
-			msg("SRXRotate (Sec) = " + methodTime);
 			msg("END ROTATE MOVE================");
 		}
 			
@@ -892,7 +874,7 @@ public class SRXDriveBase {
 		if (!isSRXMoveActive) {
 			isSRXMoveActive = true;
 			msg("START SRX MOTION ==================================");
-			methodStartTime = Timer.getFPGATimestamp();
+
 			/* Set relevant frame periods to be at least as fast as periodic rate*/
 			rightMasterMtr.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, SRXTimeoutValueMs);
 			rightMasterMtr.selectProfileSlot(SRXDriveBaseCfg.kslotIDx, SRXDriveBaseCfg.kPIDLoopIDx);
@@ -917,8 +899,6 @@ public class SRXDriveBase {
 				rightMasterMtr.set(ControlMode.MotionMagic, 0); 
 				leftMasterMtr.set(ControlMode.MotionMagic, 0);
 				isSRXMoveActive = false;
-				methodTime = Timer.getFPGATimestamp() - methodStartTime;
-				msg("SRX Motion (Sec) = " + methodTime);
 				msg("END SRX MOTION  ========================");
 			} else {
 		
@@ -929,7 +909,7 @@ public class SRXDriveBase {
 				rightMasterMtr.set(ControlMode.MotionMagic, _rightDistance); 
 				leftMasterMtr.set(ControlMode.MotionMagic, _leftDistance);
 				
-				if (isConsoleDataEnabled || isLoggingDataEnabled){
+				if (isConsoleEnabled || isLoggingEnabled){
 					SRXMotionLeftPos = leftMasterMtr.getActiveTrajectoryPosition();
 					SRXMotionLeftVel = leftMasterMtr.getActiveTrajectoryVelocity();
 					SRXMotioRightPos = rightMasterMtr.getActiveTrajectoryPosition();

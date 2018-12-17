@@ -1,12 +1,12 @@
 package org.usfirst.frc.team2228.robot;
 
 
-import org.usfirst.frc.team2228.robot.oi.DriveBaseTeleopMaster;
+import org.usfirst.frc.team2228.robot.oi.DriveTeleopBase;
 import org.usfirst.frc.team2228.robot.oi.DriverIF;
 import org.usfirst.frc.team2228.robot.sensors.AngleIF;
 import org.usfirst.frc.team2228.robot.subsystems.drvbase.SRXDriveBase;
 import org.usfirst.frc.team2228.robot.subsystems.drvbase.SRXDriveBaseCfg;
-import org.usfirst.frc.team2228.robot.test.SRXDriveBaseTest;
+import org.usfirst.frc.team2228.robot.test.SRXDriveTestBase;
 import org.usfirst.frc.team2228.robot.util.DebugLogger;
 
 
@@ -24,10 +24,10 @@ public class Robot extends IterativeRobot {
 	
 	// define object instances
 	private SRXDriveBase driveBase;
-	private SRXDriveBaseTest testDriveBase;
+	private SRXDriveTestBase testDriveBase;
 	private DriverIF driverIF;
 	private AngleIF angleIF;
-	private DriveBaseTeleopMaster driveBaseTelopMaster;
+	private DriveTeleopBase driveTeleopBase;
 	private SRXDriveBaseCfg driveBaseCfg;
 	private DebugLogger logger;
 	private RobotMap robotMap;
@@ -50,8 +50,8 @@ public class Robot extends IterativeRobot {
 		driveBase = new SRXDriveBase(robotMap, logger);
 		driveBaseCfg = new SRXDriveBaseCfg();
 
-		driveBaseTelopMaster = new DriveBaseTeleopMaster(driverIF, driveBase, logger);
-		testDriveBase = new SRXDriveBaseTest(driveBase, logger);
+		driveTelopBase = new DriveTeleopBase(driverIF, driveBase, logger);
+		testDriveBase = new SRXDriveTestBase(driveBase, logger);
 		
 	}
 
@@ -59,8 +59,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 
-		// init drive base
-		driveBase.init();
+		// public void init(boolean _isConsoleEnabled, boolean _isDataLoggingEnabled)
+		driveBase.init(false, false);
 	}
 
 	
@@ -72,23 +72,27 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
-		driveBase.init();
-		driveBaseTelopMaster.init();
+		// public void init(boolean _isConsoleEnabled, boolean _isLoggingEnabled)
+		driveBase.init(false, false);
+
+		// public void init(boolean _isConsoleDataEnabled, boolean _isTestJoyStickEnabled)
+		driveTelopBase.init(false, false);
 
 	}
 	
 	// This function is called periodically during operator control
 	@Override
 	public void teleopPeriodic() {
-		driveBaseTelopMaster.Periodic();
-		
+		driveTelopBase.Periodic();	
 	}
 	
 	
 	// This function is called once during test mode
 	@Override
 	public void testInit() {
-		testDriveBase.init();
+
+		//public void init(boolean _isConsoleEnabled)
+		testDriveBase.init(false);
 	}
 	
 	

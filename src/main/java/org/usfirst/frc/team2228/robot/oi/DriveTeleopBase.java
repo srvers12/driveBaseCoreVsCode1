@@ -5,7 +5,7 @@ import org.usfirst.frc.team2228.robot.util.DebugLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // 
-public class DriveBaseTeleopMaster {
+public class DriveTeleopBase {
 	
 	// Revisions:
 	// 181102 - renamed class, added wheel control, mecanum shiftSideways command
@@ -14,7 +14,7 @@ public class DriveBaseTeleopMaster {
 	
 	// ===============================
 	// SET COMMANDS
-	// public void Init()
+	// public void init(boolean _isConsoleDataEnabled, boolean _isTestJoyStickEnabled)
 	// public void Periodic() 
 	// public void setMaxThrottlePower(double _kMaxThrottlePowerLimitLevel)
 	// ===============================
@@ -101,9 +101,9 @@ public class DriveBaseTeleopMaster {
 	
 	//==============================================
 	// TELEOPCONTROLLER CONSTRUCTOR
-	public DriveBaseTeleopMaster(DriverIF     _driverIF, 
-								  SRXDriveBase _driveBase,
-								  DebugLogger  _debuglogger) {
+	public DriveTeleopBase(DriverIF     _driverIF, 
+						   SRXDriveBase _driveBase,
+						   DebugLogger  _debuglogger) {
 		driverIF = _driverIF;
 		driveBase = _driveBase;
 		log = _debuglogger;
@@ -111,20 +111,17 @@ public class DriveBaseTeleopMaster {
 	
 	//==========================================
 	// TELEOP INIT
-	public void init(){
-		loadSmartDashBoardParmeters();
+	public void init(boolean _isConsoleDataEnabled, boolean _isTestJoyStickEnabled){
+
+		// Set class program switches
+		isTeleopConsoleDataEnabled = _isConsoleDataEnabled? true : false;
+		isTestJoyStickEnabled = _isTestJoyStickEnabled? true : false;
 		isWheelTurnActive = false; 
 	}
 		
 	//==========================================
 	// TELEOP PERIODIC
 	public void Periodic() {
-		
-		// Flag for console display
-		isTeleopConsoleDataEnabled = SmartDashboard.getBoolean("TstBtn-EnableTeleopConsoleDisplay:", isTeleopConsoleDataEnabled);
-
-		// Flag for disable joysticks to drive base for testing joysticks and accel filter
-		isTestJoyStickEnabled = SmartDashboard.getBoolean("TstBtn-DisableJoy2SRXDrvBase:", isTestJoyStickEnabled);
 		
 		// Save the joystick values
 		
@@ -212,12 +209,6 @@ public class DriveBaseTeleopMaster {
 	kMaxThrottlePowerLimit = _kMaxThrottlePowerLimitLevel;
 	}
 	
-	// ========================================
-	// SHUFFLEBOARD
-	private void setSmartDashBoardParmeters() {
-		SmartDashboard.putBoolean("TstBtn-EnableTeleopConsoleDisplay:", isTeleopConsoleDataEnabled);
-		SmartDashboard.putBoolean("TstBtn-DisableJoy2SRXDrvBase:", isTestJoyStickEnabled);
-	}
 	// ===========================================
 	// DRIVERIF FILTERING FUNCTIONS
 
