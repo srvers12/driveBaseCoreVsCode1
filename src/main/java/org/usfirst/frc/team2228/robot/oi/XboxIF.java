@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
+// REVSISION LEVEL:
+// 181218 -  added set rumble
+
 public class XboxIF {
 	private XboxController xbox;
 

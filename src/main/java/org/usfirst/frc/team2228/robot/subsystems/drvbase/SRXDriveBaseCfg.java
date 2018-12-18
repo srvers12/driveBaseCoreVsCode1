@@ -1,7 +1,8 @@
 package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 
 public class SRXDriveBaseCfg {
-		// Revisions:
+		// REVISION LEVEL:
+		// 181218 - cleaning up code
 		// 181106 - removed drivebase choose switch
 		// 180327 - added switch to config a specific robot chassis drive base  
 		

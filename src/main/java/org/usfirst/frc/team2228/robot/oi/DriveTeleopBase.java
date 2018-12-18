@@ -4,10 +4,14 @@ import org.usfirst.frc.team2228.robot.subsystems.drvbase.SRXDriveBase;
 import org.usfirst.frc.team2228.robot.util.DebugLogger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// 
+
+// REVISION LEVEL:
+// 181218 - cleaning up code
+
 public class DriveTeleopBase {
 	
-	// Revisions:
+	// REVISION LEVEL:
+	// 181218 -  cleaning up code
 	// 181102 - renamed class, added wheel control, mecanum shiftSideways command
 	// 181029 - added new accel filter, wheelAxis axis
 	// 180831 -  updated normalize, 

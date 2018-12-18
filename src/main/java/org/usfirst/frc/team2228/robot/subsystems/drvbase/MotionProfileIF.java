@@ -3,6 +3,9 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 // Profiles are stored in directory robot\profiles
 import org.usfirst.frc.team2228.robot.subsystems.drvbase.profile.DriveStraightLine;
 
+// REVISION LEVEL:
+// 181218 - cleaning up code
+
 public class MotionProfileIF {
 	private SRXDriveBase driveBase;
 	private boolean isSRXMotionProfileActive = false;

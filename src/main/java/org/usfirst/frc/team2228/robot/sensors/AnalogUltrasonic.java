@@ -2,6 +2,9 @@ package org.usfirst.frc.team2228.robot.sensors;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 
+// REVISION LEVEL:
+// 181218 - cleaning up code
+
 public class AnalogUltrasonic {
 	AnalogInput sensor = new AnalogInput(1);
 	double voltage;

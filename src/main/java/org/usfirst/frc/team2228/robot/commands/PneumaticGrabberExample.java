@@ -1,4 +1,5 @@
 // package org.usfirst.frc.team2228.robot.commands;
+
 // todo - this is just an example - if not used - delete file
 // import org.usfirst.frc.team2228.robot.DebugLogger;
 // import org.usfirst.frc.team2228.robot.PneumaticController;
@@ -8,6 +9,9 @@
 // import edu.wpi.first.wpilibj.Solenoid;
 // import edu.wpi.first.wpilibj.Timer;
 // import edu.wpi.first.wpilibj.command.Command;
+
+//REVISION LEVEL:
+// 181218 - cleaning up code
 
 // public class PneumaticGrabberExample extends Command {
 // 		private PneumaticController pneu;

@@ -1,4 +1,5 @@
 // package org.usfirst.frc.team2228.robot.sensors;
+
 // todo - review
 // import com.kauailabs.navx.frc.AHRS;
 
@@ -7,6 +8,9 @@
 // import edu.wpi.first.wpilibj.PIDSource;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.SPI;
+
+//REVISION LEVEL:
+//181218 - cleaning up code
 
 // public class navx implements PIDOutput {
 // 	private AHRS ahrs;

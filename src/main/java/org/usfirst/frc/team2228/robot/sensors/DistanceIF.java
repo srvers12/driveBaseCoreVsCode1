@@ -1,5 +1,8 @@
 package org.usfirst.frc.team2228.robot.sensors;
 
+//REVISION LEVEL:
+//181218 -  cleaning up code
+
 public class DistanceIF {
 	public void initDistance(){
 	}

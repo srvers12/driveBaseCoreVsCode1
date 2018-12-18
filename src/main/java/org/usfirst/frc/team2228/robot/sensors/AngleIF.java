@@ -1,7 +1,10 @@
 // package org.usfirst.frc.team2228.robot.sensors;
+
 // todo - needs review
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+//REVISION LEVEL:
+// 181218 -  cleaning up code
 
 // public class AngleIF {
 	

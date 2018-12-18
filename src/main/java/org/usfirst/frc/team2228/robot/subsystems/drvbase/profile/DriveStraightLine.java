@@ -1,5 +1,9 @@
 package org.usfirst.frc.team2228.robot.subsystems.drvbase.profile;
 public class DriveStraightLine
+
+// REVISION LEVEL:
+// 181218 -  cleaning up code
+
 {
   public static final int kNumPoints = 215;
   public static double PointsR[][] = new double[][] {

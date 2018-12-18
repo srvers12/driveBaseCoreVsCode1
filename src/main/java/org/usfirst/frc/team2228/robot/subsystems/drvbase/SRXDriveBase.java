@@ -3,7 +3,9 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 //  Class SRXBaseDrive
 //  RELEASE: 2019 
 //  Team 2228
-// REVISIONS:
+
+// REVISION LEVEL:
+// 181218 - cleaning up code
 // 181106 - removed test methods
 // 181102 - updated header, added SRX motion profile
 // 181024 - removed time/velocity move commands in 2018 version
@@ -27,6 +29,8 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 // public void setBrakeMode(boolean _isBrakeEnabled)
 // public void stopMotors()
 // public void setDriveBaseRamp(double _SecToMaxPower)
+// public void setTestEnable(int _testNumber)
+// 		_testNumber - 0-clear; 1-encoder test; 2-step test
 
 // private void clearSRXDriveBasePrgFlgs()
 		
@@ -86,7 +90,7 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 // 
 // @parm  _MoveDistanceIn - move distance in inches
 // @parm  _MovePwrlevel - power level 0 - 1, 
-//						  program converts to VelocityNativeUnits as (0 to 1)* maxVelocityNativeUnits
+// program converts to VelocityNativeUnits as (0 to 1)* maxVelocityNativeUnits
 
 // ++++++++++
 // public boolean move(double  _MoveDistanceIn, 
