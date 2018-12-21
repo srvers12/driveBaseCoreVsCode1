@@ -6,7 +6,7 @@ import org.usfirst.frc.team2228.robot.oi.DriverIF;
 import org.usfirst.frc.team2228.robot.sensors.AngleIF;
 import org.usfirst.frc.team2228.robot.subsystems.drvbase.SRXDriveBase;
 import org.usfirst.frc.team2228.robot.subsystems.drvbase.SRXDriveBaseCfg;
-import org.usfirst.frc.team2228.robot.test.SRXDriveTestBase;
+import org.usfirst.frc.team2228.robot.test.SRXDriveBaseTest;
 import org.usfirst.frc.team2228.robot.util.DebugLogger;
 
 
@@ -24,7 +24,7 @@ public class Robot extends IterativeRobot {
 	
 	// define object instances
 	private SRXDriveBase driveBase;
-	private SRXDriveTestBase testDriveBase;
+	private SRXDriveBaseTest testDriveBase;
 	private DriverIF driverIF;
 	private AngleIF angleIF;
 	private DriveTeleopBase driveTeleopBase;
@@ -51,7 +51,7 @@ public class Robot extends IterativeRobot {
 		driveBaseCfg = new SRXDriveBaseCfg();
 
 		driveTelopBase = new DriveTeleopBase(driverIF, driveBase, logger);
-		testDriveBase = new SRXDriveTestBase(driveBase, logger);
+		testDriveBase = new SRXDriveBaseTest(driveBase, logger);
 		
 	}
 

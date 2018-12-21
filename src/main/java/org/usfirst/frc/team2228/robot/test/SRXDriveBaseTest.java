@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.Timer;
 //public void testMethodSelection()
 
 
-public class SRXDriveTestBase {
+public class SRXDriveBaseTest {
 
 	// objects
 	private DebugLogger log;
@@ -59,7 +59,7 @@ public class SRXDriveTestBase {
 
     // =====================
     // Constructor
-    public SRXDriveTestBase(SRXDriveBase _driveBase, DebugLogger _logger){
+    public SRXDriveBaseTest(SRXDriveBase _driveBase, DebugLogger _logger){
 		driveBase = _driveBase;
 		log = _logger;
     }
