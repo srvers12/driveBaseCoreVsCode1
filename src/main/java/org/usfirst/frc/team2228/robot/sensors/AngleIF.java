@@ -1,4 +1,4 @@
-// package org.usfirst.frc.team2228.robot.sensors;
+package org.usfirst.frc.team2228.robot.sensors;
 
 // todo - needs review
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -6,17 +6,17 @@
 //REVISION LEVEL:
 // 181218 -  cleaning up code
 
-// public class AngleIF {
+ public class AngleIF {
 	
-// 	// Define class instances
+//  Define class instances
 // 	private navx _navx;
 // 	private RoboRioAccelerometers roboAccel;
 	
-// 	// Constructor
-// 	public AngleIF() {
-// 		_navx = new navx();
-// 		roboAccel = new RoboRioAccelerometers();
-// 	}
+//  Constructor
+	public AngleIF() {
+ 		//_navx = new navx();
+ 		//roboAccel = new RoboRioAccelerometers();
+ 	}
 
 // 	public void setZeroAngle(double gyro) {
 // 		_navx.setAngleAdjustment(gyro);
@@ -49,8 +49,8 @@
 // 		return _navx.correctionFactor();
 // 	}
 	
-// 	// todo
+//  todo
 // 	public boolean getIsTiltAtMax() {
 		
 // 	}
-// }
+ }

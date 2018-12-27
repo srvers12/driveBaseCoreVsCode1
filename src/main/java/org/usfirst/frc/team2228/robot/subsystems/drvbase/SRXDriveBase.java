@@ -55,6 +55,7 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 // public double getEncoderInchesPerCount(){
 // public double getLeftCloseLoopError()
 
+// public double getEncoderHeadingDeg()
 // public double getBusVoltage()
 // public double getDriveStraightCorrection()
 // public boolean getIsDriveMoving()
@@ -121,9 +122,6 @@ package org.usfirst.frc.team2228.robot.subsystems.drvbase;
 
 
 // ===================================
-
-
-//Carrying over the classes from other libraries
 import org.usfirst.frc.team2228.robot.RobotMap;
 import org.usfirst.frc.team2228.robot.util.DebugLogger;
 
@@ -161,7 +159,7 @@ public class SRXDriveBase {
 	private Notifier pushAPI2SRXThread;
 	
 	// ===================================
-	// SRX MOTION PROFILE DRIVE BASE 
+	// SRX MOTION PROFILE DRIVE BASE VARIABLES
 
 	// The status of the motion profile executer and buffer inside the Talon.
 	// Instead of creating a new one every time we call getMotionProfileStatus,
@@ -573,6 +571,12 @@ public class SRXDriveBase {
 		return leftMasterMtr.getClosedLoopError(SRXDriveBaseCfg.kPIDLoopIDx);
 	}
 
+	// Misc gets
+	public double getEncoderHeadingDeg() {
+		encoderHeadingDeg = (getLeftEncoderPosition() - getRightEncoderPosition()) / getRobotTrackWidth() ;
+		return encoderHeadingDeg;
+	}
+
 	public double getBusVoltage() {
 		return leftMasterMtr.getBusVoltage();
 	}
@@ -679,6 +683,7 @@ public class SRXDriveBase {
 		rightCmdLevel = _rightCMDLevel;
 		leftCmdLevel = _leftCMDLevel;
 		
+		// This is here to print out data to console for encoder test
 		if(isMotorEncoderTestEnabled) {
 			// +++++++++++++++++++++++++++++++++
 			// DATA DISPLAY FOR CHECKING ENCODERS AND ENCODER DIRECTION
@@ -692,6 +697,7 @@ public class SRXDriveBase {
 								getLeftSensorPosition());
 		}
 
+		// This is here to just print out data to console for step function
 		if(isStepTestEnabled) {
 			if(rightCmdLevel>0){
 				stepFunctionSpeed = rightCmdLevel * SRXDriveBaseCfg.MaxVel_VelNativeUnits;

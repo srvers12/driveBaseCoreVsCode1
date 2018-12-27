@@ -3,15 +3,17 @@ package org.usfirst.frc.team2228.robot;
 
 import org.usfirst.frc.team2228.robot.oi.DriveTeleopBase;
 import org.usfirst.frc.team2228.robot.oi.DriverIF;
-import org.usfirst.frc.team2228.robot.sensors.AngleIF;
+//import org.usfirst.frc.team2228.robot.sensors.AngleIF;
 import org.usfirst.frc.team2228.robot.subsystems.drvbase.SRXDriveBase;
 import org.usfirst.frc.team2228.robot.subsystems.drvbase.SRXDriveBaseCfg;
+import org.usfirst.frc.team2228.robot.subsystems.drvbase.MotionProfileIF;
+
 import org.usfirst.frc.team2228.robot.test.SRXDriveBaseTest;
 import org.usfirst.frc.team2228.robot.util.DebugLogger;
 
 
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.TimedRobot;
+//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -20,13 +22,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends IterativeRobot {
+public class Robot extends TimedRobot {
 	
 	// define object instances
 	private SRXDriveBase driveBase;
 	private SRXDriveBaseTest testDriveBase;
 	private DriverIF driverIF;
-	private AngleIF angleIF;
+	//private AngleIF angleIF;
+	private MotionProfileIF motionProfileIF;
 	private DriveTeleopBase driveTeleopBase;
 	private SRXDriveBaseCfg driveBaseCfg;
 	private DebugLogger logger;
@@ -44,13 +47,14 @@ public class Robot extends IterativeRobot {
 		// Create object instances
 		logger = new DebugLogger();
 		driverIF = new DriverIF();
-		angleIF = new AngleIF();
+		//angleIF = new AngleIF();
 		robotMap = new RobotMap();
 		
 		driveBase = new SRXDriveBase(robotMap, logger);
 		driveBaseCfg = new SRXDriveBaseCfg();
+		motionProfileIF = new MotionProfileIF(driveBase);
 
-		driveTelopBase = new DriveTeleopBase(driverIF, driveBase, logger);
+		driveTeleopBase = new DriveTeleopBase(driverIF, driveBase, logger);
 		testDriveBase = new SRXDriveBaseTest(driveBase, logger);
 		
 	}
@@ -61,6 +65,7 @@ public class Robot extends IterativeRobot {
 
 		// public void init(boolean _isConsoleEnabled, boolean _isDataLoggingEnabled)
 		driveBase.init(false, false);
+		motionProfileIF.init();
 	}
 
 	
@@ -76,14 +81,14 @@ public class Robot extends IterativeRobot {
 		driveBase.init(false, false);
 
 		// public void init(boolean _isConsoleDataEnabled, boolean _isTestJoyStickEnabled)
-		driveTelopBase.init(false, false);
+		driveTeleopBase.init(false, false);
 
 	}
 	
 	// This function is called periodically during operator control
 	@Override
 	public void teleopPeriodic() {
-		driveTelopBase.Periodic();	
+		driveTeleopBase.Periodic();	
 	}
 	
 	

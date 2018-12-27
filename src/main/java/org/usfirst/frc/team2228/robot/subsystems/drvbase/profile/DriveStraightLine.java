@@ -5,8 +5,8 @@ public class DriveStraightLine
 // 181218 -  cleaning up code
 
 {
-  public static final int kNumPoints = 215;
-  public static double PointsR[][] = new double[][] {
+  public final int kNumPoints = 215;
+  public double PointsR[][] = new double[][] {
       {0,0.580703519828083,10},
       {9.67839199713472E-05,0.937534413259812,10},
       {0.000253039654269718,1.3634471426528,10},
@@ -223,7 +223,7 @@ public class DriveStraightLine
       {6.26486058328453,4.13650119687043,10},
       {6.26555000015068,2.31913306747618,10},
   }; 
-  public static double PointsL[][] = new double[][] {
+  public double PointsL[][] = new double[][] {
       {0,0.580703519828083,10},
       {9.67839199713472E-05,0.937534413259812,10},
       {0.000253039654269718,1.3634471426528,10},

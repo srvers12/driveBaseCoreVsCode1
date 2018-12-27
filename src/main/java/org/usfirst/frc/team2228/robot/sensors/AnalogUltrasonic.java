@@ -1,7 +1,7 @@
 package org.usfirst.frc.team2228.robot.sensors;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-
+// todo - needs to be completed
 // REVISION LEVEL:
 // 181218 - cleaning up code
 
@@ -11,7 +11,7 @@ public class AnalogUltrasonic {
 	double distance;
 
 	public AnalogUltrasonic(AnalogInput sensor) {
-		double voltage = sensor.getVoltage();
+		voltage = sensor.getVoltage();
 		
 	}
 	public double getDistance(){

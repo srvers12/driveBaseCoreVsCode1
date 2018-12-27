@@ -185,7 +185,7 @@ public class DriveTeleopBase {
 		// DRIVE ROBOT
 		
 		if(!isTestJoyStickEnabled){
-			if(driverIF.getMecanumShiftSidewaysBtn()){
+			if(driverIF.getMecanumShiftSidewaysBtn() > 0){
 				driveBase.setMecanumShiftSidewaysEnable(true);
 				// public void setThrottleTurn(double _throttleValue, double _turnValue, double _headingCorrection) {	
 				driveBase.setThrottleTurn(turnAxis, 0, 0);
